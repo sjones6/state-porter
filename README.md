@@ -99,7 +99,7 @@ bob.emails // undefined
 
 ## Yeah, but isn't it slower than plain JavaScript objects?
 
-Yes, of course. Capsule adds some overhead to getting and setting values.
+Yes, of course. Capsule adds some overhead to getting and setting properties, but the payoff is better state-management.
 
 If performance is your only consideration, then don't use Capsule.
 
@@ -120,6 +120,8 @@ Capsule: ~12k operations/ms
 To profile your machine, install Capsule and run `npm run capsule-profile` (must have Node and npm installed).
 
 ## In Development
+
+Computed properties.
 
 Subscribe to property updates.
 
