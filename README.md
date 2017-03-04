@@ -32,7 +32,7 @@ const Capsule = require('capsule');
 let Person = function(name) {
  
   // Capsule takes two params, and only one is required
-  // 1.) RequiredAn object with property declarations
+  // 1.) Required: An object with property declarations
   // 2.) Optional: options to loosen strictness
   store = new Capsule({
     props: {
