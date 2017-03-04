@@ -112,7 +112,9 @@ I feel that the time spent debugging mis-managed state more than makes up for th
 Here's the stats on my machine:
 
 Raw Object Properties (no accessor methods): ~40k operations/ms
+
 Object with accessor methods: ~20k operations/ms
+
 Capsule: ~12k operations/ms
 
 To profile your machine, install Capsule and run `npm run capsule-profile` (must have Node and npm installed).
@@ -128,3 +130,8 @@ capsule.subscribe('propName', (newValue, oldValue) => {
 });
 
 ```
+
+## Running Tests
+
+Tests can be run with the command: `npm run test`. Powered by Mocha.
+
