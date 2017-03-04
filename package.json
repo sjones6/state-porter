@@ -1,0 +1,25 @@
+{
+  "name": "capsule",
+  "version": "0.0.1",
+  "description": "An encapsulation helper for JavaScript",
+  "main": "capsule.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha",
+    "capsule-profile": "node ./capsule-profile.js"
+  },
+  "keywords": [
+    "Encapsulation",
+    "type",
+    "checking",
+    "private",
+    "properties",
+    "private",
+    "methods"
+  ],
+  "author": "sjones6",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^3.2.0"
+  }
+}
