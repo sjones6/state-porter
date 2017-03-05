@@ -6,9 +6,13 @@ Better state management for JavaScript objects.
 
 ## Installation
 
-This package is not on NPM yet, so you'll need to clone the repo and install it manually.
+This package is not on NPM yet, so you'll need to clone the repo and install it manually. This can be done easily by requiring the main capsule file.
 
-Once you've cloned the code, install the dependencies:
+```javascript
+const Capsule = require('./path/to/capsule');
+```
+
+There are no explicit dependencies, except development dependencies. If you want to contribute, install the development dependencies:
 
 with NPM: `npm install`
 
