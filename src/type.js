@@ -4,6 +4,7 @@ let booleanType = require('./types/boolean');
 let numberType = require('./types/number');
 let objectType = require('./types/object');
 let classType = require('./types/class');
+let functionType = require('./types/function');
 
 
 module.exports = {
@@ -23,6 +24,9 @@ module.exports = {
                 break;
             case Object:
                 return objectType;
+                break;
+            case Function:
+                return functionType;
                 break;
             case null:
                 return function() {

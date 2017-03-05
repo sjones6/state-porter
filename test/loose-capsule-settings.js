@@ -77,6 +77,11 @@ describe('Capsule with loose settings', function() {
             assert.strictEqual(store.hasChildren,'string');
         });
 
+        it('should accept a non-function', function() {
+            store.isAvailable = 'string';
+            assert.strictEqual(store.isAvailable, 'string');
+        });
+
         it('should accept incorrect class', function() {
             let animal  = new Animal('ted', 'bark');
             store.spouse = animal;

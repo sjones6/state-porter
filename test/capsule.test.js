@@ -43,6 +43,14 @@ describe('Capsule', function() {
             assert.deepStrictEqual(store.spouse, spouse);
         });
 
+        it('should set an function', function() {
+            store.isAvailable = function(available) {
+                return !available;
+            };
+            let available = store.isAvailable(true);
+            assert.strictEqual(available, false);
+        });
+
         it('should allow all types', function() {
             store.favoriteSports = {first: 'Football', second: 'Baseball'};
             store.favoriteSports = 'Table tennis';
@@ -94,6 +102,14 @@ describe('Capsule', function() {
             assert.throws(
                 () => {
                     store.hasChildren = 'string';
+                },
+                typeErrorCheck);
+        });
+
+        it('should reject a non-function', function() {
+            assert.throws(
+                () => {
+                    store.isAvailable = 'string';
                 },
                 typeErrorCheck);
         });

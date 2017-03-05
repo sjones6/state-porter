@@ -26,6 +26,7 @@ module.exports = function(options) {
                 default: ['Badminton', 'Tennis']
             },
             spouse: Person,
+            isAvailable: Function
         }
     }, options);
 }

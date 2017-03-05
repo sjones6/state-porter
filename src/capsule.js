@@ -12,7 +12,7 @@ module.exports = function(propertyRules, options) {
             store[propName] = value;
             return;
         }
-        throw new Error(`Trying to set ${propName} with incorrect type: ${value}`);
+        throw new Error(`Trying to set ${propName} with type ${typeof value}: ${value}`);
     }
 
     let getProperty = function(propName) {
