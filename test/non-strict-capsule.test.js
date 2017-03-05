@@ -1,5 +1,3 @@
-"use strict";
-
 const assert = require('assert');
 
 const testCapsule = require('./test-capsule');
@@ -8,8 +6,7 @@ const Animal = require('./test-animal');
 
 let store = testCapsule();
 
-
-describe('Capsule', function() {
+describe('Capsule in Non Strict Mode', function() {
     describe('settersAndGetters', function() {
         it('should set a string', function() {
             store.name = 'Name'
@@ -118,12 +115,9 @@ describe('Capsule', function() {
             assert.strictEqual(Object.isFrozen(store), true);
         });
 
-        it('should disallow adding new properties with an error', function() {
-            assert.throws(
-                () => {
-                    store.newProp = true;
-                },
-                Error);
+        it('should disallow adding new properties', function() {
+            store.newProp = true;
+            assert.strictEqual(typeof store.newProp, 'undefined');
         });
     });
 

@@ -1,15 +1,15 @@
-"use strict";
-
 const assert = require('assert');
 
 const testCapsule = require('./test-capsule');
 const Person = require('./test-person');
 const Animal = require('./test-animal');
 
-let store = testCapsule();
+let store = testCapsule({
+        strictTypes: false,
+        freeze: false
+    });
 
-
-describe('Capsule', function() {
+describe('Capsule with loose settings', function() {
     describe('settersAndGetters', function() {
         it('should set a string', function() {
             store.name = 'Name'
@@ -52,58 +52,35 @@ describe('Capsule', function() {
 
     describe('#typeChecking', function() {
 
-        let typeErrorCheck = function(err) {
-            if ((err instanceof Error) && /Trying to set/.test(err)) {
-              return true;
-            }
-        }
-
-        it('should reject a non-string', function() {
-            assert.throws(
-                () => {
-                    store.name = true;
-                },
-                typeErrorCheck);
+        it('should accept a non-string', function() {
+            store.name = true;
+            assert.strictEqual(store.name, true);
         });
 
-        it('should reject a non-number', function() {
-            assert.throws(
-                () => {
-                    store.phone = true;
-                },
-                typeErrorCheck);
+        it('should accept a non-number', function() {
+            store.phone = true;
+            assert.strictEqual(store.phone, true);
         });
 
-        it('should reject a non-array', function() {
-            assert.throws(
-                () => {
-                    store.emails = true;
-                },
-                typeErrorCheck);
+        it('should accept a non-array', function() {
+            store.emails = true;
+            assert.strictEqual(store.emails, true);
         });
 
-        it('should reject a non-object', function() {
-            assert.throws(
-                () => {
-                    store.location = true;
-                },
-                typeErrorCheck);
+        it('should accept a non-object', function() {
+            store.location = true;
+            assert.strictEqual(store.location, true);
         });
 
-        it('should reject a non-boolean', function() {
-            assert.throws(
-                () => {
-                    store.hasChildren = 'string';
-                },
-                typeErrorCheck);
+        it('should accept a non-boolean', function() {
+            store.hasChildren = 'string';
+            assert.strictEqual(store.hasChildren,'string');
         });
 
-        it('should reject incorrect class', function() {
-            assert.throws(
-                () => {
-                    store.spouse = new Animal('ted', 'bark');
-                },
-                typeErrorCheck);
+        it('should accept incorrect class', function() {
+            let animal  = new Animal('ted', 'bark');
+            store.spouse = animal;
+            assert.deepStrictEqual(store.spouse, animal);
         });
     });
 
@@ -115,15 +92,12 @@ describe('Capsule', function() {
 
     describe('#addNewProperties', function() {
         it('should freeze the storage object', function() {
-            assert.strictEqual(Object.isFrozen(store), true);
+            assert.strictEqual(Object.isFrozen(store), false);
         });
 
-        it('should disallow adding new properties with an error', function() {
-            assert.throws(
-                () => {
-                    store.newProp = true;
-                },
-                Error);
+        it('should disallow adding new properties', function() {
+            store.newProp = true;
+            assert.strictEqual(store.newProp, true);
         });
     });
 
