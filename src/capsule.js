@@ -1,23 +1,21 @@
 const type = require('./type');
 module.exports = function(propertyRules, options) {
+    "use strict";
 
     this.object = {};
     this.propertyRules = propertyRules;
     options = options || {};
 
     let store = {};
-    setProperty = function(propName, typeChecker, value) {
-        if (options.strictTypes) {
-            if (!typeChecker(value)) {
-                throw new Error(`Trying to set ${propName} type, but was actually ${value}`);
-            }
+    let setProperty = function(propName, typeChecker, value) {
+        if (typeChecker === true || typeChecker(value)) {
             store[propName] = value;
             return;
         }
-        store[propName] = value;
+        throw new Error(`Trying to set ${propName} with incorrect type: ${value}`);
     }
 
-    getProperty = function(propName) {
+    let getProperty = function(propName) {
         return store[propName];
     };
 
@@ -36,6 +34,11 @@ module.exports = function(propertyRules, options) {
                     initialValues[privateProp] = props[privateProp].default;
                 }
 
+                // If the options have turned of strictTypes,
+                // we'll force the type internally to null.
+                // Which effectively disables type checking.
+                typeDeclaration = (!options.strictTypes) ? null : typeDeclaration;
+
                 Object.defineProperty(this.object, privateProp, {
                     get: function() {
                         return getProperty(privateProp);
@@ -51,10 +54,13 @@ module.exports = function(propertyRules, options) {
         });
     }
 
+    // Set the initial values for declared defaults
     Object.keys(initialValues).forEach((initialValueKey) => {
         this.object[initialValueKey] = initialValues[initialValueKey];
     });
 
+    // Freeze the storage object by default,
+    // can be override by options.freeze
     if (options.freeze !== false) {
         Object.freeze(this.object);
     }
