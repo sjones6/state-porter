@@ -133,7 +133,8 @@ store = new Capsule({
     boolean: Boolean,
     object: Object,
     function: Function,
-    class: MyCustomClass,
+    internalClass: Date,
+    customClass: MyCustomClass,
     anyType: null
   }
 })

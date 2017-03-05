@@ -37,10 +37,16 @@ describe('Capsule', function() {
             assert.strictEqual(store.hasChildren, true);
         });
 
-        it('should set an custom class', function() {
+        it('should set a custom class', function() {
             let spouse = new Person('jane', 'jane@email.com');
             store.spouse = spouse;
             assert.deepStrictEqual(store.spouse, spouse);
+        });
+
+        it('should set an internal class', function() {
+            let DOB = new Date();
+            store.DOB = DOB;
+            assert.deepStrictEqual(store.DOB, DOB);
         });
 
         it('should set an function', function() {
@@ -114,7 +120,15 @@ describe('Capsule', function() {
                 typeErrorCheck);
         });
 
-        it('should reject incorrect class', function() {
+        it('should reject incorrect class for internal type', function() {
+            assert.throws(
+                () => {
+                    store.DOB = new RegExp('abc');
+                },
+                typeErrorCheck);
+        });
+
+        it('should reject incorrect class for custom type', function() {
             assert.throws(
                 () => {
                     store.spouse = new Animal('ted', 'bark');
