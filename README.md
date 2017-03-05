@@ -125,11 +125,11 @@ I feel that the time spent debugging mis-managed state more than makes up for th
 
 However, if you want some raw numbers about how Capsule performs:
 
-Raw Object Properties (no accessor methods): ~42k operations/ms
+Raw Object Properties (no accessor methods): ~40-42k operations/ms
 
-Object with accessor methods: ~22k operations/ms
+Object with accessor methods: ~21-22k operations/ms
 
-Capsule: ~16k operations/ms
+Capsule: ~18-19k operations/ms
 
 To profile your machine, install Capsule and run `npm run capsule-profile` (must have Node and npm installed).
 
