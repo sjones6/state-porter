@@ -149,5 +149,7 @@ capsule.subscribe('propName', (newValue, oldValue) => {
 
 ## Running Tests
 
-Tests can be run with the command: `npm run test`. Powered by Mocha.
+`npm run test`
+
+Powered by Mocha.
 
