@@ -113,6 +113,34 @@ bob.emails; // undefined
 jane.setLocation('nowhere'); // throws type error since location expects an object not string
 ```
 
+## Supported Types
+
+1. String
+2. Number
+3. Boolean
+4. Object
+5. Function
+6. Classes (including internal and user defined classes)
+7. Any type
+
+These can be declared in the following manner:
+
+```javascript
+store = new Capsule({
+  props: {
+    string: String,
+    number: Number,
+    boolean: Boolean,
+    object: Object,
+    function: Function,
+    class: MyCustomClass,
+    anyType: null
+  }
+})
+```
+
+Type checking can also be disabled by passing `{strictTypes: false}` in the options parameter.
+
 ## Yeah, but isn't it slower than plain JavaScript objects?
 
 Yes, of course. Capsule adds some overhead to getting and setting properties, but the payoff is better state-management.
