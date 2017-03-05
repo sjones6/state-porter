@@ -38,13 +38,13 @@ module.exports = function(propertyRules, options) {
                 // we'll force the type internally to null.
                 // Which effectively disables type checking.
                 typeDeclaration = (!options.strictTypes) ? null : typeDeclaration;
+                let typeChecker = type.getTypeChecker(typeDeclaration);
 
                 Object.defineProperty(this.object, privateProp, {
                     get: function() {
                         return getProperty(privateProp);
                     },
                     set: function(value) {
-                        let typeChecker = type.getTypeChecker(typeDeclaration);
                         setProperty(privateProp, typeChecker, value);
                     },
                     configurable: true,
