@@ -3,7 +3,7 @@ module.exports = function(propertyRules, options) {
 
     this.object = {};
     this.propertyRules = propertyRules;
-    this.options = options;
+    options = options || {};
 
     let store = {};
     setProperty = function(propName, typeChecker, value) {
@@ -55,7 +55,7 @@ module.exports = function(propertyRules, options) {
         this.object[initialValueKey] = initialValues[initialValueKey];
     });
 
-    if (this.options.freeze !== false) {
+    if (options.freeze !== false) {
         Object.freeze(this.object);
     }
 

@@ -1,9 +1,24 @@
 console.log('Profiling Capsule ...');
 
-const TestCapsule = require('./test/test-capsule');
+const Capsule = require('./capsule.js');
 
 let iterations = 1000000;
-let testCapsule = new TestCapsule();
+let CapsuleMaker = function() {
+
+    let store = new Capsule({
+        props: {
+            name: String
+        }
+    });
+
+    this.setName = function(name) {
+        store.name = name;
+    }
+    this.getName = function() {
+        return store.name;
+    }
+}
+let testCapsule = new CapsuleMaker();
 
 let startCapsule = Date.now();
 for (let i = 0; i < iterations; i++)  {

@@ -41,17 +41,27 @@ let Person = function(name) {
         // and their types.
         name: String,
         emails: Array,
+        phone: Number,
+        hasChildren: Boolean,
 
         // You can use this alternative syntax
         // to declare an initial/default value 
         // along with the type declaration
-        location {
+        location: {
             type: Object,
             default: {
                 lat: "",
                 long: ""
             }
-        }
+        },
+
+        // Type checking of custom
+        // classes is supported
+        spouse: Person,
+
+        // The type can be set to null to
+        // disable type checking.
+        favoriteSports: null
     },
 
     // Computed properties are not yet supported
@@ -95,27 +105,27 @@ jane.greet() // Hi, jane
 
 bob.addEmail('bob@email.com');
 bob.emails // undefined
+
+jane.setLocation('nowhere'); // throws type error since location expects an object not string
 ```
 
 ## Yeah, but isn't it slower than plain JavaScript objects?
 
 Yes, of course. Capsule adds some overhead to getting and setting properties, but the payoff is better state-management.
 
-If performance is your only consideration, then don't use Capsule.
+You will have to decide if Capsule's overhead is an acceptable cost. In some applications, especially applications where state-management is not that complicated, Capsule may not be necessary. However, in complex applications, it becomes increasingly critical to manage state in ways that are easy to reason about.
 
-However, if you want better state management for your JavaScript objects, then you will have to decide if Capsule's overhead is an acceptable cost. 
+If you're already doing a lot of type checking and enforcing setter methods in your objects, then Capsule takes a lot of this pain away so that you can focus on creating and not on boilerplate.
 
-If you're already doing a lot of type checking and enforcing setter methods, then Capsule takes a lot of this pain away so that you can focus on creating and not on boilerplate.
+I feel that the time spent debugging mis-managed state more than makes up for the performance difference. You can decide if Capsule is right for your application.
 
-I feel that the time spent debugging mis-managed state more than makes up for the performance difference. You can decide if Capsule is right for you.
+However, if you want some raw numbers about how Capsule performs:
 
-Here's the stats on my machine:
+Raw Object Properties (no accessor methods): ~42k operations/ms
 
-Raw Object Properties (no accessor methods): ~40k operations/ms
+Object with accessor methods: ~22k operations/ms
 
-Object with accessor methods: ~20k operations/ms
-
-Capsule: ~12k operations/ms
+Capsule: ~16k operations/ms
 
 To profile your machine, install Capsule and run `npm run capsule-profile` (must have Node and npm installed).
 

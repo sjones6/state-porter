@@ -1,73 +1,148 @@
 const assert = require('assert');
 
-const CapsuleTester = require('./test-capsule');
-const TestPerson = require('./test-person');
-const TestAnimal = require('./test-animal');
+const Capsule = require('./../capsule');
+const Person = require('./test-person');
+const Animal = require('./test-animal');
 
-const testCapsule = new CapsuleTester();
+let store = new Capsule({
+    props: {
+        name: String,
+        phone: Number,
+        emails: Array,
+        location: Object,
+        hasChildren: {
+            type: Boolean,
+            default: false
+        },
+        isCitizen: {
+            type: Boolean,
+            default: true
+        },
+        favoriteSports: {
+            type: null,
+            default: ['Badminton', 'Tennis']
+        },
+        spouse: Person,
+    }
+}, {
+    strictTypes: true,
+    freeze: true
+});
 
 
 describe('Capsule', function() {
-    describe('#getters', function() {
-        it('should should return a string', function() {
-            assert.equal(testCapsule.sayHi(), 'Spencer says hi!');
+    describe('settersAndGetters', function() {
+        it('should set a string', function() {
+            store.name = 'Name'
+            assert.strictEqual(store.name, 'Name');
+        });
+
+        it('should set a number', function() {
+            store.phone = 1234567890;
+            assert.strictEqual(store.phone, 1234567890);
+        });
+
+        it('should set an array', function() {
+            store.emails = ['first', 'second'];
+            assert.deepEqual(store.emails, ['first', 'second']);
+        });
+
+        it('should set an object', function() {
+            let loc = {lat: 12.3456, long: 12.3456};
+            store.location = loc;
+            assert.deepStrictEqual(store.location, loc);
+        });
+
+        it('should set an boolean', function() {
+            store.hasChildren = true;
+            assert.strictEqual(store.hasChildren, true);
+        });
+
+        it('should set an custom class', function() {
+            let spouse = new Person('jane', 'jane@email.com');
+            store.spouse = spouse;
+            assert.deepStrictEqual(store.spouse, spouse);
+        });
+
+        it('should allow all types', function() {
+            store.favoriteSports = {first: 'Football', second: 'Baseball'};
+            store.favoriteSports = 'Table tennis';
+            assert.strictEqual(store.favoriteSports, 'Table tennis');
         });
     });
 
-    describe('#checkTypes', function() {
-        it('should correctly type check for custom class', function() {
-            testCapsule.setSpouse(new TestPerson('Jane Doe', 'jane@email.com'));
-            assert.equal(testCapsule.getSpouse() instanceof TestPerson, true);
-        });
+    describe('#typeChecking', function() {
 
-        it('should not throw an error with variable type', function() {
-            testCapsule.setEmailToArray();
-            testCapsule.setEmailToObject();
-            testCapsule.setEmailToString();
-            assert.equal(testCapsule.getEmail(), 'testemail@tester.com');
-        });
-    });
-
-    describe('#throwErrorsOnBrokenTypes', function() {
         let typeErrorCheck = function(err) {
             if ((err instanceof Error) && /Trying to set/.test(err)) {
               return true;
             }
         }
-        it('should throw an error', function() {
+
+        it('should reject a non-string', function() {
             assert.throws(
-                testCapsule.breakType,
-                typeErrorCheck,
-                'unexpected error thrown from testCapsule#breakType'
-            );
+                () => {
+                    store.name = true;
+                },
+                typeErrorCheck);
         });
 
-        it('should correctly type check for custom class and throw error', function() {
-            let setSpouse = function() {
-                testCapsule.setSpouse(new TestAnimal('Pancake', 'meow'));
-            }
+        it('should reject a non-number', function() {
             assert.throws(
-                setSpouse,
-                typeErrorCheck,
-                'unexpected error thrown from testCapsule#breakType'
-            );
+                () => {
+                    store.phone = true;
+                },
+                typeErrorCheck);
         });
 
-        it('should throw an error when setting value to `undefined`', function() {
-            let setSpouse = function() {
-                testCapsule.setSpouse(undefined);
-            }
+        it('should reject a non-array', function() {
             assert.throws(
-                setSpouse,
-                typeErrorCheck,
-                'unexpected error thrown from testCapsule#breakType'
-            );
+                () => {
+                    store.emails = true;
+                },
+                typeErrorCheck);
+        });
+
+        it('should reject a non-object', function() {
+            assert.throws(
+                () => {
+                    store.location = true;
+                },
+                typeErrorCheck);
+        });
+
+        it('should reject a non-boolean', function() {
+            assert.throws(
+                () => {
+                    store.hasChildren = 'string';
+                },
+                typeErrorCheck);
+        });
+
+        it('should reject incorrect class', function() {
+            assert.throws(
+                () => {
+                    store.spouse = new Animal('ted', 'bark');
+                },
+                typeErrorCheck);
         });
     });
 
-    describe('#shouldSetDefaultValues', function() {
-        it('should correctly set default values', function() {
-            assert.equal(testCapsule.hasChildren(), false);
+    describe('#setDefaultValues', function() {
+        it('should set a boolean default', function() {
+            assert.equal(store.isCitizen, true);
         });
     });
+
+    describe('#addNewProperties', function() {
+        it('should freeze the storage object', function() {
+            assert.strictEqual(Object.isFrozen(store), true);
+        });
+
+        it('should disallow adding new properties', function() {
+            store.newProp = true;
+            assert.strictEqual(typeof store.newProp, 'undefined');
+        });
+    });
+
 });
