@@ -25,7 +25,9 @@ module.exports = {
                 return objectType;
                 break;
             case null:
-                return true;
+                return function() {
+                    return true;
+                }
                 break;
             default:
                 return classType(type);

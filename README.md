@@ -105,10 +105,10 @@ let Person = function(name) {
 let jane = new Person('jane');
 let bob = new Person('bob');
 
-jane.greet() // Hi, jane
+jane.greet(); // Hi, jane
 
 bob.addEmail('bob@email.com');
-bob.emails // undefined
+bob.emails; // undefined
 
 jane.setLocation('nowhere'); // throws type error since location expects an object not string
 ```

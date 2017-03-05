@@ -8,7 +8,7 @@ module.exports = function(propertyRules, options) {
 
     let store = {};
     let setProperty = function(propName, typeChecker, value) {
-        if (typeChecker === true || typeChecker(value)) {
+        if (typeChecker(value)) {
             store[propName] = value;
             return;
         }
