@@ -8,6 +8,12 @@ Better state management for JavaScript objects.
 
 This package is not on NPM yet, so you'll need to clone the repo and install it manually. This can be done easily by requiring the main capsule file.
 
+Clone the repository:
+```
+git clone https://github.com/sjones6/capsule.git
+```
+
+Require Capsule into your project:
 ```javascript
 const Capsule = require('./path/to/capsule');
 ```
@@ -18,7 +24,7 @@ with NPM: `npm install`
 
 or 
 
-with Yarn: `yarn`;
+with Yarn: `yarn`.
 
 ## Getting Started
 
