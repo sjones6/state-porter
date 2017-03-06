@@ -1,3 +1,8 @@
+
+// Importantly, all of these tests are
+// run in strict mode. This affects mainly
+// what happens when attempting to 
+// add properties to the frozen object.
 "use strict";
 
 const assert = require('assert');
@@ -10,7 +15,13 @@ let store = testCapsule();
 
 
 describe('Capsule', function() {
+
+    afterEach(function() {
+        store = testCapsule();
+    });
+
     describe('settersAndGetters', function() {
+
         it('should set a string', function() {
             store.name = 'Name'
             assert.strictEqual(store.name, 'Name');
@@ -154,6 +165,31 @@ describe('Capsule', function() {
                     store.newProp = true;
                 },
                 Error);
+        });
+    });
+
+    describe('#subscribe', function() {
+        it('should call the callback when properties are updated', function() {
+            let updateEmail = ['personal@email.com', 'work@email.com'];
+            let oldEmail = store.emails;
+            store.subscribe('emails', function(newVal, oldVal) {
+                assert.deepStrictEqual(newVal, updateEmail);
+                assert.deepStrictEqual(oldEmail, oldVal);
+            });
+            store.emails = updateEmail;
+        });
+    });
+
+    describe('#unsubscribe', function() {
+        it('should remove subscription', function() {
+            let wasCallbackCalled = false;
+            store.subscribe('emails', function(newVal, oldVal) {
+                wasCallbackCalled = true;
+            });
+            store.unsubscribe('emails');
+            store.emails = ['personal@email.com', 'work@email.com'];
+
+            assert.strictEqual(wasCallbackCalled, false);
         });
     });
 

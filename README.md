@@ -126,7 +126,7 @@ jane.setLocation('nowhere'); // throws type error since location expects an obje
 These can be declared in the following manner:
 
 ```javascript
-store = new Capsule({
+let capsule = new Capsule({
   props: {
     string: String,
     number: Number,
@@ -137,10 +137,43 @@ store = new Capsule({
     customClass: MyCustomClass,
     anyType: null
   }
-})
+});
 ```
 
 Type checking can also be disabled by passing `{strictTypes: false}` in the options parameter.
+
+## Subscribing to Updates
+
+You can subscribe to updates of properties:
+
+```javascript
+capsule.subscribe('propName', (newValue, oldValue) => {
+    // handle update
+});
+
+// Removes subscription
+capsule.unsubscribe('propName'); 
+```
+
+Example:
+```javascript
+let capsule = new Capsule({
+  props: {
+    name: {
+      type: String,
+      default: ''
+    }
+  }
+});
+
+capsule.subscribe('name', (newName, oldName) => {
+    // update logic
+});
+
+capsule.name = 'New name'; // fires subscribe handler
+```
+
+Only one subscribe handler is supported for each property. 
 
 ## Yeah, but isn't it slower than plain JavaScript objects?
 
@@ -165,16 +198,6 @@ To profile your machine, install Capsule and run `npm run capsule-profile` (must
 ## In Development
 
 Computed properties.
-
-Subscribe to property updates.
-
-```javascript
-
-capsule.subscribe('propName', (newValue, oldValue) => {
-    // update logic
-});
-
-```
 
 ## Running Tests
 
