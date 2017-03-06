@@ -144,7 +144,7 @@ Type checking can also be disabled by passing `{strictTypes: false}` in the opti
 
 ## Subscribing to Updates
 
-You can subscribe to updates of properties:
+You can subscribe to property updates:
 
 ```javascript
 capsule.subscribe('propName', (newValue, oldValue) => {
@@ -173,7 +173,7 @@ capsule.subscribe('name', (newName, oldName) => {
 capsule.name = 'New name'; // fires subscribe handler
 ```
 
-Only one subscribe handler is supported for each property. 
+Only one subscribe handler is supported for each property. Adding a new subscribe handler will overwrite the previous one.
 
 ## Yeah, but isn't it slower than plain JavaScript objects?
 
