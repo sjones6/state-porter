@@ -1,6 +1,6 @@
 {
   "name": "state-porter",
-  "version": "0.0.1",
+  "version": "0.0.11",
   "description": "Better state management for JavaScript objects",
   "keywords": [
     "quasi-encapsulation",
