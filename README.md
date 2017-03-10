@@ -131,17 +131,17 @@ The method is bound to the Porter object, so it can access properties easily wit
 Subscribe to property changes:
 
 ```javascript
-Porter.subscribe('propName', (newValue, oldValue) => {
+porter.subscribe('propName', (newValue, oldValue) => {
     // handle update
 });
 
 // Removes subscription
-Porter.unsubscribe('propName'); 
+porter.unsubscribe('propName'); 
 ```
 
 Example:
 ```javascript
-let Porter = new Porter({
+let porter = new Porter({
   props: {
     name: {
       type: String,
@@ -150,11 +150,11 @@ let Porter = new Porter({
   }
 });
 
-Porter.subscribe('name', (newName, oldName) => {
+porter.subscribe('name', (newName, oldName) => {
     // update logic
 });
 
-Porter.name = 'New name'; // fires subscribe handler
+porter.name = 'New name'; // fires subscribe handler
 ```
 
 Only one subscribe handler is supported for each property. Adding a new subscribe handler will replace the previous one.
