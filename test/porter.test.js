@@ -7,17 +7,16 @@
 
 const assert = require('assert');
 
-const testCapsule = require('./test-capsule');
+const testPorter = require('./test-porter');
 const Person = require('./test-person');
 const Animal = require('./test-animal');
 
-let store = testCapsule();
+let store = testPorter();
 
-
-describe('Capsule', function() {
+describe('Porter', function() {
 
     afterEach(function() {
-        store = testCapsule();
+        store = testPorter();
     });
 
     describe('settersAndGetters', function() {
@@ -190,6 +189,30 @@ describe('Capsule', function() {
             store.emails = ['personal@email.com', 'work@email.com'];
 
             assert.strictEqual(wasCallbackCalled, false);
+        });
+    });
+
+    describe('#computedProps', function() {
+
+        it('should calculate a computed property', function() {
+            let name = 'Jane';
+            let email = 'personal@email.com';
+            store.name = name;
+            store.emails = [email];
+            setTimeout(function() {
+                assert.strictEqual(`Name: ${name}; Email: ${email}`, store.nameEmail);
+            }, 10);
+        });
+
+        it('should subscribe to a computed property', function() {
+            let name = 'Jane';
+            let email = 'personal@email.com';
+            store.name = name;
+            store.emails = [email];
+
+            store.subscribe('nameEmail', (newVal, oldVal) => {
+                assert.strictEqual(`Name: ${name}; Email: ${email}`, newVal);
+            });
         });
     });
 

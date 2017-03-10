@@ -1,62 +1,36 @@
-# Capsule
-
-(Name subject to change once I release on NPM)
+# Porter
 
 Better state management for JavaScript objects.
 
 ## Installation
 
-This package is not on NPM yet, so you'll need to clone the repo and install it manually. This can be done easily by requiring the main capsule file.
+`npm install state-porter` or `yarn add state-porter`.
 
-Clone the repository:
-```
-git clone https://github.com/sjones6/capsule.git
-```
-
-Require Capsule into your project:
+Require Porter into your project:
 ```javascript
-const Capsule = require('./path/to/capsule');
+const Porter = require('state-porter');
 ```
 
-There are no explicit dependencies, except development dependencies. If you want to contribute, install the development dependencies:
-
-with NPM: `npm install`
-
-or 
-
-with Yarn: `yarn`.
+There are no explicit dependencies, except development dependencies for testing. If you want to contribute, install the development dependencies.
 
 ## Getting Started
 
-Capsule works by leveraging the "privacy" of closures in Javascript functions, and especially constructor functions.
+Porter works best within the "privacy" of closures in Javascript functions, and especially constructor functions.
 
-In order for Capsule to provide help with an object's private state, you'll need create a new instance of Capsule inside of your constructor function. Simply never set the Capsule instance on the object constructed and it will not be accessible
-outside of that closure.
+In order for Porter to provide help with an object's private state, you'll need create a new instance of Porter inside of your constructor function. Simply never set the Porter instance on the object constructed and it will not be accessible
+outside of that closure. See more about this pattern [here](http://blog.spenceralanjones.com/using-closures-to-create-quasi-encapsulation-in-javascript/).
 
-Effectively, this means that the capsule instance is available only to the object created by the constructor.
+Effectively, this means that the Porter instance is available only to the object created by the constructor.
 
 ```javascript
-const Capsule = require('capsule');
-
-// Here's your constructor function
+const Porter = require('Porter');
 let Person = function(name) {
- 
-  // Capsule takes two params, and only one is required
-  // 1.) Required: An object with property declarations
-  // 2.) Optional: options to loosen strictness
-  store = new Capsule({
+  store = new Porter({
     props: {
-        
-        // Declare your property names here
-        // and their types.
+        // Short syntax
         name: String,
-        emails: Array,
-        phone: Number,
-        hasChildren: Boolean,
 
-        // You can use this alternative syntax
-        // to declare an initial/default value 
-        // along with the type declaration
+        // Long syntax
         location: {
             type: Object,
             default: {
@@ -64,41 +38,12 @@ let Person = function(name) {
                 long: ""
             }
         },
-
-        // Type checking of custom
-        // classes is supported
-        spouse: Person,
-
-        // The type can be set to null to
-        // disable type checking.
-        favoriteSports: null
-    },
-
-    // Computed properties are not yet supported
-    // but are in development
-    computed: {
-    }
-  }, {
-
-    // Whether to enforce strict types
-    // during setting. Defaults to true
-    strictTypes: true,
-
-    // Whether to freeze after initialization;
-    // If frozen, store's properties can be
-    // manipulated but no properties added.
-    // Defaults to true.
-    freeze: true
   });
 
   store.name = name;
-    
-  this.greet = function() {
-    return `Hi, ${store.name}!`;
+  this.getName = function() {
+    return store.name;
   };
-  this.addEmail = function(email) {
-      store.emails.push(email);
-  }
   this.setLocation = function(location) {
       store.location = location;
   }
@@ -111,10 +56,9 @@ let Person = function(name) {
 let jane = new Person('jane');
 let bob = new Person('bob');
 
-jane.greet(); // Hi, jane
+jane.getName(); // jane
 
-bob.addEmail('bob@email.com');
-bob.emails; // undefined
+bob.setLocation({lat: 12.345, long: -12.3459}); // success
 
 jane.setLocation('nowhere'); // throws type error since location expects an object not string
 ```
@@ -127,12 +71,12 @@ jane.setLocation('nowhere'); // throws type error since location expects an obje
 4. Object
 5. Function
 6. Classes (including internal and user defined classes)
-7. Any type
+7. No type checking
 
 These can be declared in the following manner:
 
 ```javascript
-let capsule = new Capsule({
+let Porter = new Porter({
   props: {
     string: String,
     number: Number,
@@ -148,22 +92,56 @@ let capsule = new Capsule({
 
 Type checking can also be disabled by passing `{strictTypes: false}` in the options parameter.
 
-## Subscribing to Updates
+## Computed Properties
 
-You can subscribe to property updates:
+Computed properties are recalculated every time one of their dependent properties changes.
 
 ```javascript
-capsule.subscribe('propName', (newValue, oldValue) => {
+let porter = new Porter({
+  props: {
+    name: {
+      type: String,
+      default: ""
+    }
+  },
+  computed: {
+    greeting: {
+      type: String,
+      deps: ['name'],
+      calc: function() {
+        return `Hi, ${this.name}!`;
+      }
+    }
+  }
+});
+
+porter.name = 'Bob';
+console.log(porter.greeting); // Hi, Bob!
+
+porter.name = 'Jane';
+console.log(porter.greeting); // Hi, Jane!
+```
+
+It is best to declare dependent properties with default values, otherwise the property may be undefined if not set. This may change so that properties are initialized with default values in all cases.
+
+The method is bound to the Porter object, so it can access properties easily with `this.propName`.
+
+## Subscribing to Updates
+
+Subscribe to property changes:
+
+```javascript
+Porter.subscribe('propName', (newValue, oldValue) => {
     // handle update
 });
 
 // Removes subscription
-capsule.unsubscribe('propName'); 
+Porter.unsubscribe('propName'); 
 ```
 
 Example:
 ```javascript
-let capsule = new Capsule({
+let Porter = new Porter({
   props: {
     name: {
       type: String,
@@ -172,42 +150,40 @@ let capsule = new Capsule({
   }
 });
 
-capsule.subscribe('name', (newName, oldName) => {
+Porter.subscribe('name', (newName, oldName) => {
     // update logic
 });
 
-capsule.name = 'New name'; // fires subscribe handler
+Porter.name = 'New name'; // fires subscribe handler
 ```
 
-Only one subscribe handler is supported for each property. Adding a new subscribe handler will overwrite the previous one.
+Only one subscribe handler is supported for each property. Adding a new subscribe handler will replace the previous one.
 
 ## Yeah, but isn't it slower than plain JavaScript objects?
 
-Yes, of course. Capsule adds some overhead to getting and setting properties, but the payoff is better state-management.
+Yes, of course. Porter adds some overhead to getting and setting properties, but the payoff is better state-management.
 
-You will have to decide if Capsule's overhead is an acceptable cost. In some applications, especially applications where state-management is not that complicated, Capsule may not be necessary. However, in complex applications, it becomes increasingly critical to manage state in ways that are easy to reason about.
+You will have to decide if Porter's overhead is an acceptable cost. In some applications, especially applications where state-management is not that complicated, Porter may not be necessary. However, in complex applications, it becomes increasingly critical to manage state in ways that are easy to reason about.
 
-If you're already doing a lot of type checking and enforcing setter methods in your objects, then Capsule takes a lot of this pain away so that you can focus on creating and not on boilerplate.
+If you're already doing a lot of type checking and enforcing setter methods in your objects, then Porter takes a lot of this pain away so that you can focus on creating and not on boilerplate.
 
-I feel that the time spent debugging mis-managed state more than makes up for the performance difference. You can decide if Capsule is right for your application.
+You can decide if Porter is right for your application.
 
-However, if you want some raw numbers about how Capsule performs:
+However, if you want some raw numbers about how Porter performs:
 
-Raw Object Properties (no accessor methods): ~40-42k operations/ms
+##### Raw Object Properties (no accessor methods): ~40-42k operations/ms
 
-Object with accessor methods: ~21-22k operations/ms
+##### Object with accessor methods: ~21-22k operations/ms
 
-Capsule: ~18-19k operations/ms
+##### Porter: ~18-19k operations/ms
 
-To profile your machine, install Capsule and run `npm run capsule-profile` (must have Node and npm installed).
-
-## In Development
-
-Computed properties.
+To profile your machine, install Porter and run `npm run porter-profile` (must have Node and npm installed).
 
 ## Running Tests
 
+Install the development dependencies before running tests. Tests are powered by Mocha.
+
 `npm run test`
 
-Powered by Mocha.
+
 

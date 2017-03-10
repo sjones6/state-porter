@@ -1,3 +1,3 @@
 module.exports = function(val) {
-    return val && (typeof val === 'number' || val instanceof Number);
+    return typeof val !== 'undefined' && (typeof val === 'number' || val instanceof Number);
 }

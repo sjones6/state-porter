@@ -1,4 +1,4 @@
-const Capsule = require('./../capsule');
+const Porter = require('./../state-porter');
 const Person = require('./test-person');
 
 module.exports = function(options) {
@@ -7,11 +7,17 @@ module.exports = function(options) {
         freeze: true
     };
 
-    return new Capsule({
+    return new Porter({
         props: {
-            name: String,
+            name: {
+                type: String,
+                default: ''
+            },
             phone: Number,
-            emails: Array,
+            emails: {
+                type: Array,
+                default: []
+            },
             location: Object,
             hasChildren: {
                 type: Boolean,
@@ -28,6 +34,15 @@ module.exports = function(options) {
             spouse: Person,
             isAvailable: Function,
             DOB: Date
+        },
+        computed: {
+            nameEmail: {
+                type: String,
+                deps: ['name', 'emails'],
+                calc: function() {
+                    return `Name: ${this.name}; Email: ${this.emails[0]}`;
+                }
+            }
         }
     }, options);
 }

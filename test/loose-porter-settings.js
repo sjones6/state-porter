@@ -1,15 +1,15 @@
 const assert = require('assert');
 
-const testCapsule = require('./test-capsule');
+const testPorter = require('./test-porter');
 const Person = require('./test-person');
 const Animal = require('./test-animal');
 
-let store = testCapsule({
+let store = testPorter({
         strictTypes: false,
         freeze: false
     });
 
-describe('Capsule with loose settings', function() {
+describe('Porter with loose settings', function() {
     
     describe('#typeChecking', function() {
 

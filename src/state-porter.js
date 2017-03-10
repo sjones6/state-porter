@@ -24,13 +24,14 @@ module.exports = function(propertyRules, options) {
             store[propName] = value;
             return;
         }
-        throw new Error(`Trying to set ${propName} with type ${typeof value}: ${value}`);
+        throw new Error(`Trying to set '${propName}' with type ${typeof value}: ${value}`);
     }
 
     let getProperty = function(propName) {
         return store[propName];
     };
 
+    // Properties
     if (this.propertyRules.props) {
         let props = this.propertyRules.props;
         Object.keys(props).forEach((privateProp) => {
@@ -38,7 +39,7 @@ module.exports = function(propertyRules, options) {
                 let self = this;
 
                 if (reservedKeywords.indexOf(privateProp) !== -1) {
-                    throw "'subscribe' is a reserved keyword in Capsule";
+                    throw "'subscribe' is a reserved keyword in Porter";
                 }
 
                 let typeDeclaration = props[privateProp];
@@ -62,7 +63,7 @@ module.exports = function(propertyRules, options) {
                     },
                     configurable: true,
                     enumerable: true
-                })
+                });
             }
         });
     }
@@ -74,7 +75,7 @@ module.exports = function(propertyRules, options) {
 
     this.object.subscribe = function(propName, callback) {
         if (!this.hasOwnProperty(propName)) {
-            throw `${propName} is not available on this Capsule.`;
+            throw `${propName} is not available on this Porter.`;
         }
         if (!isFunction(callback)) {
             throw "The second parameter passed to `subscribe` must be a callback";
@@ -85,6 +86,40 @@ module.exports = function(propertyRules, options) {
     this.object.unsubscribe = function(propName) {
         delete subscriptions[propName];
     };
+
+
+    // Computed Properties
+    if (this.propertyRules.computed) {
+        let computedProps = this.propertyRules.computed;
+        Object.keys(computedProps).forEach((computedProp) => {
+            if (computedProps.hasOwnProperty(computedProp)) {
+                var computed = computedProps[computedProp];
+
+                // Ensure no collisions with existing props
+                if (this.object[computedProp]) {
+                    throw "Cannot declare computed property with the same key as a generic property";
+                }
+
+                let typeChecker = type.getTypeChecker(computed.type);
+                Object.defineProperty(this.object, computedProp, {
+                    get: function() {
+                        return getProperty(computedProp);
+                    },
+                    set: function(value) {
+                        setProperty(computedProp, typeChecker, value);
+                    },
+                    configurable: true,
+                    enumerable: true
+                });
+
+                computed.deps.forEach((dependency) => {
+                    this.object.subscribe(dependency, (old, newVal) => {
+                        this.object[computedProp] = computed.calc.bind(this.object).call();
+                    });
+                });               
+            }
+        });
+    }
 
     // Freeze the storage object by default,
     // can be override by options.freeze

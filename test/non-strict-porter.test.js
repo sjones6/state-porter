@@ -1,12 +1,12 @@
 const assert = require('assert');
 
-const testCapsule = require('./test-capsule');
+const testPorter = require('./test-porter');
 const Person = require('./test-person');
 const Animal = require('./test-animal');
 
-let store = testCapsule();
+let store = testPorter();
 
-describe('Capsule in Non Strict Mode', function() {
+describe('Porter in Non Strict Mode', function() {
 
     describe('#addNewProperties', function() {
         it('should freeze the storage object', function() {

@@ -1,3 +1,3 @@
 module.exports = function(val) {
-    return val && (val instanceof String || typeof val === 'string');
+    return typeof val !== 'undefined' && (val instanceof String || typeof val === 'string');
 }
