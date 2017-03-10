@@ -25,7 +25,7 @@ Effectively, this means that the Porter instance is available only to the object
 ```javascript
 const Porter = require('Porter');
 let Person = function(name) {
-  store = new Porter({
+  let porter = new Porter({
     props: {
         // Short syntax
         name: String,
@@ -40,15 +40,15 @@ let Person = function(name) {
         },
   });
 
-  store.name = name;
+  porter.name = name;
   this.getName = function() {
-    return store.name;
+    return porter.name;
   };
   this.setLocation = function(location) {
-      store.location = location;
+      porter.location = location;
   }
   this.getLocation = function() {
-      return store.location;
+      return porter.location;
   }
     
 }

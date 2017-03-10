@@ -1,0 +1,125 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/Cellar/node/7.5.0/bin/node',
+1 verbose cli   '/Users/Spencer/.npm-packages/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@4.1.2
+3 info using node@v7.5.0
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   escapedName: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/Spencer/Code/state-porter',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/Spencer/.npm/state-porter/0.0.1/package.tgz not in flight; packing
+9 verbose correctMkdir /Users/Spencer/.npm correctMkdir not in flight; initializing
+10 info lifecycle state-porter@0.0.1~prepublish: state-porter@0.0.1
+11 silly lifecycle state-porter@0.0.1~prepublish: no script for prepublish, continuing
+12 info lifecycle state-porter@0.0.1~prepare: state-porter@0.0.1
+13 silly lifecycle state-porter@0.0.1~prepare: no script for prepare, continuing
+14 verbose tar pack [ '/Users/Spencer/.npm/state-porter/0.0.1/package.tgz',
+14 verbose tar pack   '/Users/Spencer/Code/state-porter' ]
+15 verbose tarball /Users/Spencer/.npm/state-porter/0.0.1/package.tgz
+16 verbose folder /Users/Spencer/Code/state-porter
+17 verbose addLocalTarball adding from inside cache /Users/Spencer/.npm/state-porter/0.0.1/package.tgz
+18 verbose correctMkdir /Users/Spencer/.npm correctMkdir not in flight; initializing
+19 silly cache afterAdd state-porter@0.0.1
+20 verbose afterAdd /Users/Spencer/.npm/state-porter/0.0.1/package/package.json not in flight; writing
+21 verbose correctMkdir /Users/Spencer/.npm correctMkdir not in flight; initializing
+22 verbose afterAdd /Users/Spencer/.npm/state-porter/0.0.1/package/package.json written
+23 silly publish { name: 'state-porter',
+23 silly publish   version: '0.0.1',
+23 silly publish   description: 'Better state management for JavaScript objects',
+23 silly publish   keywords:
+23 silly publish    [ 'quasi-encapsulation',
+23 silly publish      'type checking',
+23 silly publish      'private properties',
+23 silly publish      'computed properties',
+23 silly publish      'change events' ],
+23 silly publish   main: 'state-porter.js',
+23 silly publish   scripts:
+23 silly publish    { test: './node_modules/mocha/bin/mocha',
+23 silly publish      'porter-profile': 'node ./porter-profile.js' },
+23 silly publish   repository:
+23 silly publish    { type: 'git',
+23 silly publish      url: 'git+https://github.com/sjones6/state-porter.git' },
+23 silly publish   author:
+23 silly publish    { name: 'Spener Jones',
+23 silly publish      email: 'jones.spencera@gmail.com',
+23 silly publish      url: 'spenceralanjones.com' },
+23 silly publish   email: 'jones.spencera@gmail.com',
+23 silly publish   license: 'MIT',
+23 silly publish   devDependencies: { mocha: '^3.2.0' },
+23 silly publish   readme: '# Porter\n\nBetter state management for JavaScript objects.\n\n## Installation\n\n`npm install state-porter` or `yarn add state-porter`.\n\nRequire Porter into your project:\n```javascript\nconst Porter = require(\'state-porter\');\n```\n\nThere are no explicit dependencies, except development dependencies for testing. If you want to contribute, install the development dependencies.\n\n## Getting Started\n\nPorter works best within the "privacy" of closures in Javascript functions, and especially constructor functions.\n\nIn order for Porter to provide help with an object\'s private state, you\'ll need create a new instance of Porter inside of your constructor function. Simply never set the Porter instance on the object constructed and it will not be accessible\noutside of that closure. See more about this pattern [here](http://blog.spenceralanjones.com/using-closures-to-create-quasi-encapsulation-in-javascript/).\n\nEffectively, this means that the Porter instance is available only to the object created by the constructor.\n\n```javascript\nconst Porter = require(\'Porter\');\nlet Person = function(name) {\n  store = new Porter({\n    props: {\n        // Short syntax\n        name: String,\n\n        // Long syntax\n        location: {\n            type: Object,\n            default: {\n                lat: "",\n                long: ""\n            }\n        },\n  });\n\n  store.name = name;\n  this.getName = function() {\n    return store.name;\n  };\n  this.setLocation = function(location) {\n      store.location = location;\n  }\n  this.getLocation = function() {\n      return store.location;\n  }\n    \n}\n\nlet jane = new Person(\'jane\');\nlet bob = new Person(\'bob\');\n\njane.getName(); // jane\n\nbob.setLocation({lat: 12.345, long: -12.3459}); // success\n\njane.setLocation(\'nowhere\'); // throws type error since location expects an object not string\n```\n\n## Supported Types\n\n1. String\n2. Number\n3. Boolean\n4. Object\n5. Function\n6. Classes (including internal and user defined classes)\n7. No type checking\n\nThese can be declared in the following manner:\n\n```javascript\nlet Porter = new Porter({\n  props: {\n    string: String,\n    number: Number,\n    boolean: Boolean,\n    object: Object,\n    function: Function,\n    internalClass: Date,\n    customClass: MyCustomClass,\n    anyType: null\n  }\n});\n```\n\nType checking can also be disabled by passing `{strictTypes: false}` in the options parameter.\n\n## Computed Properties\n\nComputed properties are recalculated every time one of their dependent properties changes.\n\n```javascript\nlet porter = new Porter({\n  props: {\n    name: {\n      type: String,\n      default: ""\n    }\n  },\n  computed: {\n    greeting: {\n      type: String,\n      deps: [\'name\'],\n      calc: function() {\n        return `Hi, ${this.name}!`;\n      }\n    }\n  }\n});\n\nporter.name = \'Bob\';\nconsole.log(porter.greeting); // Hi, Bob!\n\nporter.name = \'Jane\';\nconsole.log(porter.greeting); // Hi, Jane!\n```\n\nIt is best to declare dependent properties with default values, otherwise the property may be undefined if not set. This may change so that properties are initialized with default values in all cases.\n\nThe method is bound to the Porter object, so it can access properties easily with `this.propName`.\n\n## Subscribing to Updates\n\nSubscribe to property changes:\n\n```javascript\nporter.subscribe(\'propName\', (newValue, oldValue) => {\n    // handle update\n});\n\n// Removes subscription\nporter.unsubscribe(\'propName\'); \n```\n\nExample:\n```javascript\nlet porter = new Porter({\n  props: {\n    name: {\n      type: String,\n      default: \'\'\n    }\n  }\n});\n\nporter.subscribe(\'name\', (newName, oldName) => {\n    // update logic\n});\n\nporter.name = \'New name\'; // fires subscribe handler\n```\n\nOnly one subscribe handler is supported for each property. Adding a new subscribe handler will replace the previous one.\n\n## Yeah, but isn\'t it slower than plain JavaScript objects?\n\nYes, of course. Porter adds some overhead to getting and setting properties, but the payoff is better state-management.\n\nYou will have to decide if Porter\'s overhead is an acceptable cost. In some applications, especially applications where state-management is not that complicated, Porter may not be necessary. However, in complex applications, it becomes increasingly critical to manage state in ways that are easy to reason about.\n\nIf you\'re already doing a lot of type checking and enforcing setter methods in your objects, then Porter takes a lot of this pain away so that you can focus on creating and not on boilerplate.\n\nYou can decide if Porter is right for your application.\n\nHowever, if you want some raw numbers about how Porter performs:\n\n##### Raw Object Properties (no accessor methods): ~40-42k operations/ms\n\n##### Object with accessor methods: ~21-22k operations/ms\n\n##### Porter: ~18-19k operations/ms\n\nTo profile your machine, install Porter and run `npm run porter-profile` (must have Node and npm installed).\n\n## Running Tests\n\nInstall the development dependencies before running tests. Tests are powered by Mocha.\n\n`npm run test`\n\n\n\n',
+23 silly publish   readmeFilename: 'README.md',
+23 silly publish   gitHead: '1bcf115a10e2c329a05f3d3863b8cd9975c7bbae',
+23 silly publish   bugs: { url: 'https://github.com/sjones6/state-porter/issues' },
+23 silly publish   homepage: 'https://github.com/sjones6/state-porter#readme',
+23 silly publish   _id: 'state-porter@0.0.1',
+23 silly publish   _shasum: 'efd3d8411d89924da86509b9b15ecb4ff5beb9e6',
+23 silly publish   _from: '.' }
+24 info lifecycle state-porter@0.0.1~prepublishOnly: state-porter@0.0.1
+25 silly lifecycle state-porter@0.0.1~prepublishOnly: no script for prepublishOnly, continuing
+26 verbose getPublishConfig undefined
+27 silly mapToRegistry name state-porter
+28 silly mapToRegistry using default registry
+29 silly mapToRegistry registry https://registry.npmjs.org/
+30 silly mapToRegistry data Result {
+30 silly mapToRegistry   raw: 'state-porter',
+30 silly mapToRegistry   scope: null,
+30 silly mapToRegistry   escapedName: 'state-porter',
+30 silly mapToRegistry   name: 'state-porter',
+30 silly mapToRegistry   rawSpec: '',
+30 silly mapToRegistry   spec: 'latest',
+30 silly mapToRegistry   type: 'tag' }
+31 silly mapToRegistry uri https://registry.npmjs.org/state-porter
+32 verbose publish registryBase https://registry.npmjs.org/
+33 silly publish uploading /Users/Spencer/.npm/state-porter/0.0.1/package.tgz
+34 verbose request uri https://registry.npmjs.org/state-porter
+35 verbose request sending authorization for write operation
+36 info attempt registry request try #1 at 6:45:31 PM
+37 verbose request using bearer token for auth
+38 verbose request id cab5a629e120024d
+39 http request PUT https://registry.npmjs.org/state-porter
+40 http 403 https://registry.npmjs.org/state-porter
+41 verbose headers { 'content-type': 'application/json',
+41 verbose headers   'cache-control': 'max-age=300',
+41 verbose headers   'content-length': '95',
+41 verbose headers   'accept-ranges': 'bytes',
+41 verbose headers   date: 'Fri, 10 Mar 2017 23:45:25 GMT',
+41 verbose headers   via: '1.1 varnish',
+41 verbose headers   connection: 'keep-alive',
+41 verbose headers   'x-served-by': 'cache-iad2146-IAD',
+41 verbose headers   'x-cache': 'MISS',
+41 verbose headers   'x-cache-hits': '0',
+41 verbose headers   'x-timer': 'S1489189525.276304,VS0,VE539',
+41 verbose headers   vary: 'Accept-Encoding' }
+42 verbose request invalidating /Users/Spencer/.npm/registry.npmjs.org/state-porter on PUT
+43 error publish Failed PUT 403
+44 verbose stack Error: "You cannot publish over the previously published version 0.0.1." : state-porter
+44 verbose stack     at makeError (/Users/Spencer/.npm-packages/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:304:12)
+44 verbose stack     at CachingRegistryClient.<anonymous> (/Users/Spencer/.npm-packages/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:292:14)
+44 verbose stack     at Request._callback (/Users/Spencer/.npm-packages/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:212:14)
+44 verbose stack     at Request.self.callback (/Users/Spencer/.npm-packages/lib/node_modules/npm/node_modules/request/request.js:186:22)
+44 verbose stack     at emitTwo (events.js:106:13)
+44 verbose stack     at Request.emit (events.js:192:7)
+44 verbose stack     at Request.<anonymous> (/Users/Spencer/.npm-packages/lib/node_modules/npm/node_modules/request/request.js:1081:10)
+44 verbose stack     at emitOne (events.js:96:13)
+44 verbose stack     at Request.emit (events.js:189:7)
+44 verbose stack     at IncomingMessage.<anonymous> (/Users/Spencer/.npm-packages/lib/node_modules/npm/node_modules/request/request.js:1001:12)
+45 verbose statusCode 403
+46 verbose pkgid state-porter
+47 verbose cwd /Users/Spencer/Code/state-porter
+48 error Darwin 16.3.0
+49 error argv "/usr/local/Cellar/node/7.5.0/bin/node" "/Users/Spencer/.npm-packages/bin/npm" "publish"
+50 error node v7.5.0
+51 error npm  v4.1.2
+52 error code E403
+53 error "You cannot publish over the previously published version 0.0.1." : state-porter
+54 error If you need help, you may report this error at:
+54 error     <https://github.com/npm/npm/issues>
+55 verbose exit [ 1, true ]
