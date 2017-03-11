@@ -38,6 +38,9 @@ let Person = function(name) {
                 long: ""
             }
         },
+  }, {
+    freeze: true, // default
+    strictTypes: true // default
   });
 
   porter.name = name;
@@ -76,7 +79,7 @@ jane.setLocation('nowhere'); // throws type error since location expects an obje
 These can be declared in the following manner:
 
 ```javascript
-let Porter = new Porter({
+let porter = new Porter({
   props: {
     string: String,
     number: Number,
@@ -90,7 +93,27 @@ let Porter = new Porter({
 });
 ```
 
-Type checking can also be disabled by passing `{strictTypes: false}` in the options parameter.
+## Options
+
+```javascript
+let porter = new Porter({
+  props: {
+    name: String,
+    age: Number
+  }
+}, {
+  // default settings:
+  freeze: true,
+  strictTypes: true
+});
+```
+
+There are two ways to bypass type checking of properties:
+
+* Disable type checking for a single property by passing a `null` type for in the property declaration
+* Disable all type checking by passing `{strictTypes: false}` in the options
+
+By default, the Porter instance is frozen so that no properties can be added after initialization. This behavior can be disabled by passing `{freeze: false}` in the options.
 
 ## Computed Properties
 
@@ -126,6 +149,8 @@ It is best to declare dependent properties with default values, otherwise the pr
 
 The method is bound to the Porter object, so it can access properties easily with `this.propName`.
 
+Computed properties can depend on other computed properties as long as it does not create a circular dependency which will produce an infinite loop of callbacks.
+
 ## Subscribing to Updates
 
 Subscribe to property changes:
@@ -158,6 +183,43 @@ porter.name = 'New name'; // fires subscribe handler
 ```
 
 Only one subscribe handler is supported for each property. Adding a new subscribe handler will replace the previous one.
+
+## Full API
+
+
+#### Initialization:
+```javascript
+let porter = new Porter({
+    props: {
+
+      // Short property declaration
+      userId: Number,
+      name: String,
+
+      // Long declaration
+      activeUser: {
+        type: Boolean,
+        default: true
+      }
+    }, 
+    computed: {
+      lastUpdated: {
+        type: Date,
+        deps: ['name', 'userId', 'activeUser'],
+        calc: function() {
+          return new Date();
+        }
+      }
+    }
+  }, {
+    freeze: true,
+    strictTypes: true
+});  
+```
+#### `porter.subscribe('propName', (newVal, oldVal) => { });`: Subscribe to property updates
+
+#### `porter.unsubscribe('propName';`: Remove property subscription
+
 
 ## Yeah, but isn't it slower than plain JavaScript objects?
 

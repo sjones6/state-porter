@@ -204,6 +204,18 @@ describe('Porter', function() {
             }, 10);
         });
 
+        it('should calculate a computed property that depends on another computed property', function() {
+            let name = 'Jane';
+            let email = 'personal@email.com';
+            let age = 35;
+            store.name = name;
+            store.emails = [email];
+            store.age = age;
+            setTimeout(function() {
+                assert.strictEqual(`Name: ${name}; Email: ${email}; Age: ${age}`, store.nameEmailAge);
+            }, 10);
+        });
+
         it('should subscribe to a computed property', function() {
             let name = 'Jane';
             let email = 'personal@email.com';

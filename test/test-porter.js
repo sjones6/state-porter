@@ -33,7 +33,8 @@ module.exports = function(options) {
             },
             spouse: Person,
             isAvailable: Function,
-            DOB: Date
+            DOB: Date,
+            age: Number
         },
         computed: {
             nameEmail: {
@@ -41,6 +42,13 @@ module.exports = function(options) {
                 deps: ['name', 'emails'],
                 calc: function() {
                     return `Name: ${this.name}; Email: ${this.emails[0]}`;
+                }
+            },
+            nameEmailAge: {
+                type: String,
+                deps: ['nameEmail', 'age'],
+                calc: function() {
+                    return `${this.nameEmail}; Age: ${this.age}`;
                 }
             }
         }
