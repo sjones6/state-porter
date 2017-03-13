@@ -1,6 +1,6 @@
 {
   "name": "state-porter",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Better state management for JavaScript objects",
   "keywords": [
     "quasi-encapsulation",
@@ -18,7 +18,6 @@
     "type": "git",
     "url": "https://github.com/sjones6/state-porter.git"
   },
-
   "author": {
     "name": "Spener Jones",
     "email": "jones.spencera@gmail.com",
