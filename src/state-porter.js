@@ -22,6 +22,7 @@ module.exports = function(propertyRules, options) {
             // it. The promise is simply so we can return
             // quickly while subscriptions run asynchronously
             subscribe.run(propName, value, oldVal);
+            
             return;
         }
         throw new Error(`Trying to set '${propName}' with type ${typeof value}: ${value}`);

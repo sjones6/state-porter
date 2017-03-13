@@ -3,17 +3,19 @@ let computedSubscriptions = {};
 
 module.exports = {
     run(propName, newVal, oldVal) {
-        return new Promise((resolve) => {
-            if (subscriptions[propName]) {
-                subscriptions[propName](newVal, oldVal);
-            }
-            if (computedSubscriptions[propName]) {
-                computedSubscriptions[propName].forEach(computed => {
-                    computed.context[computed.computedPropName] =  computed.calc.call(computed.context);
-                });
-            }
-            resolve();
-        });
+        if (subscriptions[propName] || computedSubscriptions[propName]) {
+            new Promise((resolve) => {
+                if (subscriptions[propName]) {
+                    subscriptions[propName](newVal, oldVal);
+                }
+                if (computedSubscriptions[propName]) {
+                    computedSubscriptions[propName].forEach(computed => {
+                        computed.context[computed.computedPropName] =  computed.calc.call(computed.context);
+                    });
+                }
+                resolve();
+            });
+        }
     },
     prop(propName, callback) {
         subscriptions[propName] = callback;
