@@ -245,14 +245,6 @@ If you're already doing a lot of type checking and enforcing setter methods in y
 
 You can decide if Porter is right for your application.
 
-However, if you want some raw numbers about how Porter performs:
-
-##### Raw Object Properties (no accessor methods): ~40-42k operations/ms
-
-##### Object with accessor methods: ~21-22k operations/ms
-
-##### Porter: ~18-19k operations/ms
-
 To profile your machine, install Porter and run `npm run porter-profile` (must have Node and npm installed).
 
 ## Running Tests
