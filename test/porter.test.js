@@ -11,11 +11,10 @@ const testPorter = require('./test-porter');
 const Person = require('./test-person');
 const Animal = require('./test-animal');
 
-let store = testPorter();
-
 describe('Porter', function() {
 
-    afterEach(function() {
+    let store;
+    beforeEach(function() {
         store = testPorter();
     });
 
@@ -167,15 +166,72 @@ describe('Porter', function() {
         });
     });
 
+
+    describe('#computedProps', function() {
+
+        it('should calculate a computed property', function() {
+            let name = 'Jane';
+            store.name = name;
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve(store.nameEmail);
+                }, 5);
+            }).then((nameEmail) => {
+                assert.strictEqual(`Name: ${name};`, nameEmail);
+            });
+        });
+
+        it('should calculate a computed property that depends on another computed property', function() {
+            let name = 'Jane';
+            let email = 'personal@email.com';
+            let age = 35;
+            store.name = name;
+            store.emails = [email];
+            store.age = age;
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(store.nameEmailAge);
+                }, 10);
+            })
+            .then((nameEmailAge) => {
+                assert.strictEqual(`Name: ${name}; Age: ${age}`, nameEmailAge);
+            });
+        });
+    });
+
     describe('#subscribe', function() {
         it('should call the callback when properties are updated', function() {
+            store.emails = [];
             let updateEmail = ['personal@email.com', 'work@email.com'];
-            let oldEmail = store.emails;
-            store.subscribe('emails', function(newVal, oldVal) {
-                assert.deepStrictEqual(newVal, updateEmail);
-                assert.deepStrictEqual(oldEmail, oldVal);
+            return new Promise((resolve) => {
+                    store.subscribe('emails', function(newVal, oldVal) {
+                        resolve({newVal, oldVal});
+                    });
+                    store.emails = updateEmail;
+            }).then((vals) => {
+                assert.deepStrictEqual(vals.newVal, updateEmail);
+                assert.deepStrictEqual(vals.oldVal, []);
             });
-            store.emails = updateEmail;
+        });
+
+        it('subscribe should not overwrite computed props subscribe', function() {
+            return new Promise((resolve) => {
+                store.name = 'Jane';
+                let lastUpdated;
+                setTimeout(() => {
+                    lastUpdated = store.lastUpdated;
+
+                    // Attempt to overwrite subscription
+                    store.subscribe('emails', (newVal, oldVal) => {});
+                    store.emails = ['personal@email.com', 'work@email.com'];
+
+                }, 1);
+                setTimeout(() => {
+                    assert.notStrictEqual(store.lastUpdated.getTime(), lastUpdated.getTime());
+                    resolve();
+                }, 3);
+            });
+
         });
     });
 
@@ -189,42 +245,6 @@ describe('Porter', function() {
             store.emails = ['personal@email.com', 'work@email.com'];
 
             assert.strictEqual(wasCallbackCalled, false);
-        });
-    });
-
-    describe('#computedProps', function() {
-
-        it('should calculate a computed property', function() {
-            let name = 'Jane';
-            let email = 'personal@email.com';
-            store.name = name;
-            store.emails = [email];
-            setTimeout(function() {
-                assert.strictEqual(`Name: ${name}; Email: ${email}`, store.nameEmail);
-            }, 10);
-        });
-
-        it('should calculate a computed property that depends on another computed property', function() {
-            let name = 'Jane';
-            let email = 'personal@email.com';
-            let age = 35;
-            store.name = name;
-            store.emails = [email];
-            store.age = age;
-            setTimeout(function() {
-                assert.strictEqual(`Name: ${name}; Email: ${email}; Age: ${age}`, store.nameEmailAge);
-            }, 10);
-        });
-
-        it('should subscribe to a computed property', function() {
-            let name = 'Jane';
-            let email = 'personal@email.com';
-            store.name = name;
-            store.emails = [email];
-
-            store.subscribe('nameEmail', (newVal, oldVal) => {
-                assert.strictEqual(`Name: ${name}; Email: ${email}`, newVal);
-            });
         });
     });
 

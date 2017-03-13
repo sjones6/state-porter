@@ -39,16 +39,23 @@ module.exports = function(options) {
         computed: {
             nameEmail: {
                 type: String,
-                deps: ['name', 'emails'],
+                deps: ['name'],
                 calc: function() {
-                    return `Name: ${this.name}; Email: ${this.emails[0]}`;
+                    return `Name: ${this.name};`;
                 }
             },
             nameEmailAge: {
                 type: String,
                 deps: ['nameEmail', 'age'],
                 calc: function() {
-                    return `${this.nameEmail}; Age: ${this.age}`;
+                    return `${this.nameEmail} Age: ${this.age}`;
+                }
+            },
+            lastUpdated: {
+                type: Date,
+                deps: "*",
+                calc: function() {
+                    return new Date();
                 }
             }
         }

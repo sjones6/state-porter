@@ -1,4 +1,5 @@
 const type = require('./type');
+const subscribe = require('./subscribe');
 module.exports = function(propertyRules, options) {
     "use strict";
 
@@ -12,16 +13,15 @@ module.exports = function(propertyRules, options) {
     let initialValues = {};
     let reservedKeywords = ["subscribe", "unsubscribe"];
 
-    // Type checking
-    let isObject = type.getTypeChecker(Object);
-    let isFunction = type.getTypeChecker(Function);
-
     let setProperty = function(propName, typeChecker, value) {
         if (typeChecker(value)) {
-            if (subscriptions[propName]) {
-                subscriptions[propName](value, store[propName]);
-            }
+            var oldVal = store[propName];
             store[propName] = value;
+
+            // This returns a promise, but don't handle
+            // it. The promise is simply so we can return
+            // quickly while subscriptions run asynchronously
+            subscribe.run(propName, value, oldVal);
             return;
         }
         throw new Error(`Trying to set '${propName}' with type ${typeof value}: ${value}`);
@@ -43,7 +43,7 @@ module.exports = function(propertyRules, options) {
                 }
 
                 let typeDeclaration = props[privateProp];
-                if (isObject(props[privateProp])) {
+                if (type.isObject(props[privateProp])) {
                     typeDeclaration = props[privateProp].type;
                     initialValues[privateProp] = props[privateProp].default;
                 }
@@ -77,14 +77,14 @@ module.exports = function(propertyRules, options) {
         if (!this.hasOwnProperty(propName)) {
             throw `${propName} is not available on this Porter.`;
         }
-        if (!isFunction(callback)) {
+        if (!type.isFunction(callback)) {
             throw "The second parameter passed to `subscribe` must be a callback";
         }
-        subscriptions[propName] = callback;
+        subscribe.prop(propName, callback);
     };
 
     this.object.unsubscribe = function(propName) {
-        delete subscriptions[propName];
+        subscribe.removeProp(propName);
     };
 
 
@@ -112,11 +112,23 @@ module.exports = function(propertyRules, options) {
                     enumerable: true
                 });
 
-                computed.deps.forEach((dependency) => {
-                    this.object.subscribe(dependency, (old, newVal) => {
-                        this.object[computedProp] = computed.calc.bind(this.object).call();
+                let subscribeToDependency = propName => {
+                    subscribe.computed(propName, computedProp, computed.calc, this.object);
+                };
+
+                if (computed.deps === "*") {
+                    Object.keys(this.propertyRules.props).forEach(propName => {
+
+                        // Don't subscribe to its own property
+                        if (propName !== computedProp) {
+                            subscribeToDependency(propName)
+                        }
                     });
-                });               
+                } else if (type.isArray(computed.deps)) {
+                    computed.deps.forEach(subscribeToDependency); 
+                } else if (type.isString(computed.deps)) {
+                    subscribeToDependency(computed.deps);
+                }
             }
         });
     }

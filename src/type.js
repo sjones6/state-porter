@@ -36,5 +36,11 @@ module.exports = {
             default:
                 return classType(type);
         }
-    }
+    },
+    isString: stringType,
+    isArray: arrayType,
+    isBoolean: booleanType,
+    isNumber: numberType,
+    isObject: objectType,
+    isFunction: functionType
 };  
