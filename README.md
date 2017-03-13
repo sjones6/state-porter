@@ -203,9 +203,23 @@ let porter = new Porter({
       }
     }, 
     computed: {
+      greeting: {
+        type: String,
+        deps: 'name', // single property
+        calc: function() {
+          return `Hi ${this.name}`;
+        }
+      },
+      userName: {
+        type: String,
+        deps: ['name', 'userId'], // multiple properties
+        calc: function() {
+          return `${this.name}_${this.userId`;
+        }
+      },
       lastUpdated: {
         type: Date,
-        deps: ['name', 'userId', 'activeUser'],
+        deps: "*", // all non-computed properties
         calc: function() {
           return new Date();
         }
